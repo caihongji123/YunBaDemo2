@@ -7,7 +7,9 @@
 //
 
 #import "AppDelegate.h"
-
+#import "GlobalAttribute.h"
+#import "YunBaService.h"
+@import UserNotifications;
 @interface AppDelegate ()
 
 @end
@@ -16,8 +18,81 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+//    NSArray *familyNames = [UIFont familyNames];
+//    for(NSString *familyName in familyNames ) {
+//        printf("Family: %s \n",[familyName UTF8String]);
+//        NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
+//        for(NSString *fontName in fontNames ){
+//            printf("\tFont: %s \n",[fontName UTF8String]);
+//        }
+//    }
     // Override point for customization after application launch.
+    // set yunba log level
+    kYBLogLevel = kYBLogLevelDebug;
+    
+    YBSetupOption *setupOption = [[YBSetupOption alloc] init];
+    // set api timeout
+    [setupOption setAPITimeout:kYbDefaultApiTimeout];
+    
+    // set heartbeat interval
+    [setupOption setHeartbeatInterval:kYBDefaultHeartbeatInterval];
+    
+    // set api retry
+    [setupOption setAPIRetryEnabled:kYBDefaultApiRetryEnabled];
+    
+    // uncomment to setup yunba service, refer to http://www.yunba.io to get an appkey
+    [YunBaService setupWithAppkey:@"57de472618fbf4e0707299c9"];
+    
+    // register remote notification
+    [self registerRemoteNotification];
+    
     return YES;
+}
+
+-(void)registerRemoteNotification {
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0) {
+        UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+        [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            granted ? NSLog(@"author success!") : NSLog(@"author failed!");
+        }];
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }else if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 &&
+              [[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
+        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings
+                                                                             settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+    }else {
+        NSLog(@"ios version is too old,register remote notification failed");
+        //        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    }
+}
+- (void)unregisterRemoteNotification {
+    [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+}
+// for device token
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSLog(@"get Device Token: %@", [NSString stringWithFormat:@"Device Token: %@", deviceToken]);
+    // uncomment to store device token to YunBa
+    [YunBaService storeDeviceToken:deviceToken resultBlock:^(BOOL succ, NSError *error) {
+        if (succ) {
+            NSLog(@"store device token to YunBa succ");
+        } else {
+            NSLog(@"store device token to YunBa failed due to : %@, recovery suggestion: %@", error, [error localizedRecoverySuggestion]);
+        }
+    }];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
+    if ([[[UIDevice currentDevice] model] rangeOfString:@"Simulator"].location != NSNotFound) {
+        NSLog(@"apns is NOT supported on simulator, run your Application on a REAL device to get device token");
+    }
+    
+    NSLog(@"didFailToRegisterForRemoteNotificationsWithError Error: %@", error);
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -41,5 +116,4 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
-
 @end

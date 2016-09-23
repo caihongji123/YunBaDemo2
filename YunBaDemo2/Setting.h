@@ -1,0 +1,13 @@
+//
+//  Setting.h
+//  YunBaDemo2
+//
+//  Created by 云巴pro on 16/9/14.
+//  Copyright © 2016年 SHENZHEN WEIZHIYUN TECHNOLOGY CO.LTD. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface Setting : UIViewController
+
+@end

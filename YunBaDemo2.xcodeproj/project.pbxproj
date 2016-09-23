@@ -7,25 +7,57 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040F1F2B1D8C0A9C00545F67 /* GlobalAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 040F1F2A1D8C0A9C00545F67 /* GlobalAttribute.m */; };
+		040F1F431D8E77D500545F67 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 040F1F421D8E77D500545F67 /* UserNotifications.framework */; };
+		040F1F461D8E79EC00545F67 /* Console+mainView.m in Sources */ = {isa = PBXBuildFile; fileRef = 040F1F451D8E79EC00545F67 /* Console+mainView.m */; };
+		040F1F481D8E81DD00545F67 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 040F1F471D8E81DD00545F67 /* SystemConfiguration.framework */; };
+		040F1F4D1D8F908200545F67 /* Notifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 040F1F4C1D8F908200545F67 /* Notifications.m */; };
+		0439B9191D8932B7000E56A8 /* Console.m in Sources */ = {isa = PBXBuildFile; fileRef = 0439B9181D8932B7000E56A8 /* Console.m */; };
+		0439B91D1D8934B9000E56A8 /* Console+leftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0439B91C1D8934B9000E56A8 /* Console+leftView.m */; };
 		045714051D88E20A00CF8514 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 045714041D88E20A00CF8514 /* main.m */; };
 		045714081D88E20A00CF8514 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 045714071D88E20A00CF8514 /* AppDelegate.m */; };
-		0457140B1D88E20A00CF8514 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0457140A1D88E20A00CF8514 /* ViewController.m */; };
 		0457140E1D88E20A00CF8514 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0457140C1D88E20A00CF8514 /* Main.storyboard */; };
 		045714101D88E20A00CF8514 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0457140F1D88E20A00CF8514 /* Assets.xcassets */; };
 		045714131D88E20A00CF8514 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 045714111D88E20A00CF8514 /* LaunchScreen.storyboard */; };
+		0457141D1D88E24900CF8514 /* libYunBa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0457141B1D88E24900CF8514 /* libYunBa.a */; };
+		046B1DC31D90D0770078755E /* ActionController.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1DC21D90D0770078755E /* ActionController.m */; };
+		046B1DC91D9257250078755E /* Console+msgHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1DC81D9257250078755E /* Console+msgHandle.m */; };
+		046B1DCC1D9263170078755E /* TextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1DCB1D9263170078755E /* TextView.m */; };
+		046B1DD71D93711F0078755E /* LeftView.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1DD41D93711F0078755E /* LeftView.m */; };
+		046B1DD81D93711F0078755E /* Setting.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1DD61D93711F0078755E /* Setting.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		040F1F291D8C0A9C00545F67 /* GlobalAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalAttribute.h; sourceTree = "<group>"; };
+		040F1F2A1D8C0A9C00545F67 /* GlobalAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalAttribute.m; sourceTree = "<group>"; };
+		040F1F421D8E77D500545F67 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		040F1F451D8E79EC00545F67 /* Console+mainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Console+mainView.m"; sourceTree = "<group>"; };
+		040F1F471D8E81DD00545F67 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		040F1F4B1D8F908200545F67 /* Notifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notifications.h; sourceTree = "<group>"; };
+		040F1F4C1D8F908200545F67 /* Notifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Notifications.m; sourceTree = "<group>"; };
+		0439B9171D8932B7000E56A8 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
+		0439B9181D8932B7000E56A8 /* Console.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Console.m; sourceTree = "<group>"; };
+		0439B91C1D8934B9000E56A8 /* Console+leftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Console+leftView.m"; sourceTree = "<group>"; };
 		045714001D88E20A00CF8514 /* YunBaDemo2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YunBaDemo2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		045714041D88E20A00CF8514 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		045714061D88E20A00CF8514 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		045714071D88E20A00CF8514 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		045714091D88E20A00CF8514 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		0457140A1D88E20A00CF8514 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		0457140D1D88E20A00CF8514 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0457140F1D88E20A00CF8514 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		045714121D88E20A00CF8514 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		045714141D88E20A00CF8514 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0457141B1D88E24900CF8514 /* libYunBa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libYunBa.a; sourceTree = "<group>"; };
+		0457141C1D88E24900CF8514 /* YunBaService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YunBaService.h; sourceTree = "<group>"; };
+		046B1DC11D90D0770078755E /* ActionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionController.h; sourceTree = "<group>"; };
+		046B1DC21D90D0770078755E /* ActionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionController.m; sourceTree = "<group>"; };
+		046B1DC81D9257250078755E /* Console+msgHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Console+msgHandle.m"; sourceTree = "<group>"; };
+		046B1DCA1D9263170078755E /* TextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextView.h; sourceTree = "<group>"; };
+		046B1DCB1D9263170078755E /* TextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextView.m; sourceTree = "<group>"; };
+		046B1DD31D93711F0078755E /* LeftView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftView.h; sourceTree = "<group>"; };
+		046B1DD41D93711F0078755E /* LeftView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftView.m; sourceTree = "<group>"; };
+		046B1DD51D93711F0078755E /* Setting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Setting.h; sourceTree = "<group>"; };
+		046B1DD61D93711F0078755E /* Setting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Setting.m; sourceTree = "<group>"; };
+		046B1DD91D9521FB0078755E /* YunBaDemo2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YunBaDemo2.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,17 +65,71 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				040F1F481D8E81DD00545F67 /* SystemConfiguration.framework in Frameworks */,
+				040F1F431D8E77D500545F67 /* UserNotifications.framework in Frameworks */,
+				0457141D1D88E24900CF8514 /* libYunBa.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		040F1F2C1D8C38D200545F67 /* view */ = {
+			isa = PBXGroup;
+			children = (
+				046B1DCA1D9263170078755E /* TextView.h */,
+				046B1DCB1D9263170078755E /* TextView.m */,
+				046B1DD31D93711F0078755E /* LeftView.h */,
+				046B1DD41D93711F0078755E /* LeftView.m */,
+			);
+			name = view;
+			sourceTree = "<group>";
+		};
+		040F1F2D1D8C38FB00545F67 /* controller */ = {
+			isa = PBXGroup;
+			children = (
+				045714061D88E20A00CF8514 /* AppDelegate.h */,
+				045714071D88E20A00CF8514 /* AppDelegate.m */,
+				0439B9171D8932B7000E56A8 /* Console.h */,
+				046B1DC81D9257250078755E /* Console+msgHandle.m */,
+				0439B91C1D8934B9000E56A8 /* Console+leftView.m */,
+				040F1F451D8E79EC00545F67 /* Console+mainView.m */,
+				0439B9181D8932B7000E56A8 /* Console.m */,
+				046B1DD51D93711F0078755E /* Setting.h */,
+				046B1DD61D93711F0078755E /* Setting.m */,
+			);
+			name = controller;
+			sourceTree = "<group>";
+		};
+		040F1F2E1D8C391D00545F67 /* object */ = {
+			isa = PBXGroup;
+			children = (
+				040F1F291D8C0A9C00545F67 /* GlobalAttribute.h */,
+				040F1F2A1D8C0A9C00545F67 /* GlobalAttribute.m */,
+				040F1F4B1D8F908200545F67 /* Notifications.h */,
+				040F1F4C1D8F908200545F67 /* Notifications.m */,
+				046B1DC11D90D0770078755E /* ActionController.h */,
+				046B1DC21D90D0770078755E /* ActionController.m */,
+			);
+			name = object;
+			sourceTree = "<group>";
+		};
+		040F1F411D8E77D500545F67 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				040F1F471D8E81DD00545F67 /* SystemConfiguration.framework */,
+				040F1F421D8E77D500545F67 /* UserNotifications.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		045713F71D88E20A00CF8514 = {
 			isa = PBXGroup;
 			children = (
+				0457141A1D88E24900CF8514 /* YunBaSDK */,
 				045714021D88E20A00CF8514 /* YunBaDemo2 */,
 				045714011D88E20A00CF8514 /* Products */,
+				040F1F411D8E77D500545F67 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,10 +144,10 @@
 		045714021D88E20A00CF8514 /* YunBaDemo2 */ = {
 			isa = PBXGroup;
 			children = (
-				045714061D88E20A00CF8514 /* AppDelegate.h */,
-				045714071D88E20A00CF8514 /* AppDelegate.m */,
-				045714091D88E20A00CF8514 /* ViewController.h */,
-				0457140A1D88E20A00CF8514 /* ViewController.m */,
+				046B1DD91D9521FB0078755E /* YunBaDemo2.entitlements */,
+				040F1F2E1D8C391D00545F67 /* object */,
+				040F1F2D1D8C38FB00545F67 /* controller */,
+				040F1F2C1D8C38D200545F67 /* view */,
 				0457140C1D88E20A00CF8514 /* Main.storyboard */,
 				0457140F1D88E20A00CF8514 /* Assets.xcassets */,
 				045714111D88E20A00CF8514 /* LaunchScreen.storyboard */,
@@ -77,6 +163,16 @@
 				045714041D88E20A00CF8514 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0457141A1D88E24900CF8514 /* YunBaSDK */ = {
+			isa = PBXGroup;
+			children = (
+				0457141B1D88E24900CF8514 /* libYunBa.a */,
+				0457141C1D88E24900CF8514 /* YunBaService.h */,
+			);
+			name = YunBaSDK;
+			path = YunBaDemo2/YunBaSDK;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -105,11 +201,17 @@
 		045713F81D88E20A00CF8514 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "SHENZHEN WEIZHIYUN TECHNOLOGY CO.LTD.";
 				TargetAttributes = {
 					045713FF1D88E20A00CF8514 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 3DT7AA598T;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -149,9 +251,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0457140B1D88E20A00CF8514 /* ViewController.m in Sources */,
+				040F1F4D1D8F908200545F67 /* Notifications.m in Sources */,
 				045714081D88E20A00CF8514 /* AppDelegate.m in Sources */,
+				046B1DD81D93711F0078755E /* Setting.m in Sources */,
+				046B1DC31D90D0770078755E /* ActionController.m in Sources */,
+				040F1F2B1D8C0A9C00545F67 /* GlobalAttribute.m in Sources */,
+				040F1F461D8E79EC00545F67 /* Console+mainView.m in Sources */,
+				0439B91D1D8934B9000E56A8 /* Console+leftView.m in Sources */,
+				046B1DD71D93711F0078755E /* LeftView.m in Sources */,
 				045714051D88E20A00CF8514 /* main.m in Sources */,
+				0439B9191D8932B7000E56A8 /* Console.m in Sources */,
+				046B1DCC1D9263170078755E /* TextView.m in Sources */,
+				046B1DC91D9257250078755E /* Console+msgHandle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,8 +302,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -214,7 +327,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -235,8 +348,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -252,7 +367,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -263,10 +378,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = YunBaDemo2/YunBaDemo2.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 3DT7AA598T;
 				INFOPLIST_FILE = YunBaDemo2/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/YunBaDemo2/YunBaSDK",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yunba.io.YunBaDemo2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -274,10 +399,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = YunBaDemo2/YunBaDemo2.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 3DT7AA598T;
 				INFOPLIST_FILE = YunBaDemo2/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/YunBaDemo2/YunBaSDK",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yunba.io.YunBaDemo2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -300,6 +435,7 @@
 				045714191D88E20A00CF8514 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
