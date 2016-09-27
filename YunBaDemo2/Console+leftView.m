@@ -15,7 +15,23 @@
 @implementation Console (leftView)
 
 #pragma mark - Action <getTopicList> <getAliasList>
--(void)topicsAndAliasesInit {
+-(void)getAliasWithTopic:(NSArray *)topicArray currentIndex:(NSInteger)currentIndex completon:(void(^)(void))completon{
+    [YunBaService getAliasListV2:topicArray[currentIndex] resultBlock:^(NSDictionary *res, NSError *error) {
+        if (error.code != kYBErrorNoError) { return; }
+        NSMutableArray *aliases = [[res objectForKey:@"alias"] mutableCopy];
+        if ([aliases containsObject:[GlobalAttribute sharedInstance].alias]) {
+            [aliases removeObject:[GlobalAttribute sharedInstance].alias];
+        }
+        [[GlobalAttribute sharedInstance].topicAndAliases setObject:aliases forKey:topicArray[currentIndex]];
+        [self.lefViewTableView reloadData];
+        if (currentIndex < topicArray.count - 1) {
+            [self getAliasWithTopic:topicArray currentIndex:currentIndex + 1 completon:completon];
+        }else {
+            if (completon) {completon();}
+        }
+    }];
+}
+-(void)topicsAndAliasesInit:(void(^)(void))completon {
     [YunBaService getAlias:^(NSString *res, NSError *error) {
         if (error.code != kYBErrorNoError) {
             NSLog(@"getAlias error:%@",error);
@@ -29,23 +45,25 @@
                 return;
             }
             [GlobalAttribute sharedInstance].topicAndAliases = [NSMutableDictionary new];
-            for (NSString *topic in res) {
-                [YunBaService getAliasListV2:topic resultBlock:^(NSDictionary *res, NSError *error) {
-                    if (error.code != kYBErrorNoError) {
-                        return;
-                    }
-                    NSMutableArray *aliases = [[res objectForKey:@"alias"] mutableCopy];
-                    if ([aliases containsObject:[GlobalAttribute sharedInstance].alias]) {
-                        [aliases removeObject:[GlobalAttribute sharedInstance].alias];
-                    }
-                    [[GlobalAttribute sharedInstance].topicAndAliases setObject:aliases forKey:topic];
-                    //NSLog(@"%@",[GlobalAttribute sharedInstance].topicAndAliases);
-                    [self.lefViewTableView reloadData];
-                }];
-                
-            }
+            [self getAliasWithTopic:res currentIndex:0 completon:completon];
+//            for (NSString *topic in res) {
+//                [YunBaService getAliasListV2:topic resultBlock:^(NSDictionary *res, NSError *error) {
+//                    if (error.code != kYBErrorNoError) {
+//                        return;
+//                    }
+//                    NSMutableArray *aliases = [[res objectForKey:@"alias"] mutableCopy];
+//                    if ([aliases containsObject:[GlobalAttribute sharedInstance].alias]) {
+//                        [aliases removeObject:[GlobalAttribute sharedInstance].alias];
+//                    }
+//                    [[GlobalAttribute sharedInstance].topicAndAliases setObject:aliases forKey:topic];
+//                    //NSLog(@"%@",[GlobalAttribute sharedInstance].topicAndAliases);
+//                    [self.lefViewTableView reloadData];
+//                }];
+//            }
+            
         }];
     }];
+    
 }
 -(void)topicAction:(UIButton *)sender forEvent:(UIEvent *)event {
     NSLog(@"action");
@@ -54,6 +72,7 @@
     [[GlobalAttribute sharedInstance] changeMsgArray:topic type:MsgObjType2Topic];
     [self.mainViewTableView reloadData];
     [self.leftView hideLeftView:^{ [self deHighlight:sender]; }];
+    self.naviBarTitle.title = topic;
 }
 -(void)topicLongpressed:(UILongPressGestureRecognizer *)reco {
     if (reco.state == UIGestureRecognizerStateBegan) {
@@ -95,7 +114,7 @@
             [Notifications sendNotification:[NSString stringWithFormat:@"Unsubscribe [%@] failed!",self.selectedTopic]];
         }
     }];
-    [self topicsAndAliasesInit];
+    [self topicsAndAliasesInit:nil];
 }
 -(void)subscribePresence {
     [YunBaService subscribePresence:self.selectedTopic resultBlock:^(BOOL succ, NSError *error) {
@@ -127,7 +146,7 @@
 -(UIView *)leftView_tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     NSString *topic = [[GlobalAttribute sharedInstance].topicAndAliases allKeys][section];
     UIView *topicView = [[UIView alloc] init];
-    topicView.backgroundColor = [UIColor clearColor];
+    topicView.backgroundColor = self.leftView.backgroundColor;
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     button.titleLabel.font = [UIFont fontWithName:TOPIC_FONT size:17];
     [button setTitle:[NSString stringWithFormat:@"   %@",topic] forState:UIControlStateNormal];
@@ -135,7 +154,7 @@
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [button addTarget:self action:@selector(topicAction:forEvent:) forControlEvents:UIControlEventTouchUpInside];
     [button addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(topicLongpressed:)]];
-    button.backgroundColor = self.leftView.backgroundColor;
+    button.backgroundColor = [UIColor clearColor];
     button.frame = CGRectMake(10, 0, self.leftView.frame.size.width - 20, TABLEVIEW_HEADER_HEIGHT - 1);
     button.layer.cornerRadius = 8.0f;
     [button addTarget:self action:@selector(highlight:) forControlEvents:UIControlEventTouchDown];
@@ -178,6 +197,7 @@
     [[GlobalAttribute sharedInstance] changeMsgArray:alias type:MsgObjType2Alias];
     [self.mainViewTableView reloadData];
     [self.leftView hideLeftView:nil];
+    self.naviBarTitle.title = alias;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 @end

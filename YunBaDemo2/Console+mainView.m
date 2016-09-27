@@ -17,6 +17,7 @@
 
 
 @implementation Console (mainView)
+
 #pragma mark - others <Publish> <PublishToAlias>
 - (IBAction)tap:(id)sender {[self.view endEditing:YES]; }
 - (IBAction)send:(id)sender {
@@ -32,11 +33,12 @@
         NSMutableDictionary *dict = [NSMutableDictionary new];
         [dict setObject:self.sendField.text forKey:@"Text"];
         [dict setObject:[GlobalAttribute sharedInstance].alias forKey:@"AliasName"];
-        YBPublishOption *option = [YBPublishOption optionWithQos:[GlobalAttribute sharedInstance].qosLevel retained:NO];
         if ([type isEqualToString:@"Topic"]) {
             [dict setObject:@"Topic" forKey:@"Type"];
             NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
-            [YunBaService publish:aim data:data option:option resultBlock:^(BOOL succ, NSError *error) {
+            YBApnOption *apnOpt = [YBApnOption optionWithAlert:[NSString stringWithFormat:@"%@:%@",[GlobalAttribute sharedInstance].alias,self.sendField.text] badge:@(1) sound:@"default" contentAvailable:@(1) extra:@{@"json":dict}];
+            YBPublish2Option *option = [YBPublish2Option optionWithApnOption:apnOpt];
+            [YunBaService publish2:aim data:data option:option resultBlock:^(BOOL succ, NSError *error) {
                 if (succ) {
                     NSLog(@"Success! Publish to topic : <%@> data: <%@>",aim,data);
                     MsgObj *obj = [[MsgObj alloc] initWithTopic:aim payload:data];
@@ -52,7 +54,9 @@
         }else {
             [dict setObject:@"Alias" forKey:@"Type"];
             NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
-            [YunBaService publishToAlias:aim data:data resultBlock:^(BOOL succ, NSError *error) {
+            YBApnOption *apnOpt = [YBApnOption optionWithAlert:[NSString stringWithFormat:@"%@:%@",[GlobalAttribute sharedInstance].alias,self.sendField.text] badge:@(1) sound:@"default" contentAvailable:@(1) extra:@{@"json":dict}];
+            YBPublish2Option *option = [YBPublish2Option optionWithApnOption:apnOpt];
+            [YunBaService publish2ToAlias:aim data:data option:option resultBlock:^(BOOL succ, NSError *error) {
                 if (succ) {
                     NSLog(@"Success! Publish to alias: <%@> data: <%@>",aim,data);
                     MsgObj *obj = [[MsgObj alloc] initWithTopic:aim payload:data];
@@ -66,14 +70,16 @@
                 }
             }];
         }
-        
         NSLog(@"send!");
     }
 }
 - (IBAction)longPress:(UILongPressGestureRecognizer *)sender {
     //ActionController
 }
-
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self send:self.sendButton];
+    return YES;
+}
 #pragma mark - tableViewDelegate
 -(NSInteger)mainView_numberOfSectionsInTableView:(UITableView *)tableView { return 1; }
 

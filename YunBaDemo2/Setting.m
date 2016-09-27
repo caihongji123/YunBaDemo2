@@ -65,7 +65,7 @@
                 if (succ) {
                     NSLog(@"success subscribe topic : %@",self.topicField.text);
                     [Notifications sendNotification:[NSString stringWithFormat:@"success subscribe topic :\n%@",self.topicField.text]];
-                    [[GlobalAttribute sharedInstance].consle topicsAndAliasesInit];
+                    [[GlobalAttribute sharedInstance].consle topicsAndAliasesInit:nil];
                 }else {
                     NSLog(@"subscribe topic: %@ failed",self.topicField.text);
                     [Notifications sendNotification:[NSString stringWithFormat:@"subscribe topic: %@ failed",self.topicField.text]];
@@ -98,7 +98,9 @@
                     [dict setObject:self.aliasField.text forKey:@"NewAlias"];
                     NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
                     for (NSString *topic in [[GlobalAttribute sharedInstance].topicAndAliases allKeys]) {
-                        [YunBaService publish:topic data:data resultBlock:^(BOOL succ, NSError *error) {
+                        YBApnOption *apnOpt = [YBApnOption optionWithAlert:[NSString stringWithFormat:@"有人改名了：%@ ==> %@",[GlobalAttribute sharedInstance].alias,self.aliasField.text] badge:@(1) sound:@"default"];
+                        YBPublish2Option *option = [YBPublish2Option optionWithApnOption:apnOpt];
+                        [YunBaService publish2:topic data:data option:option resultBlock:^(BOOL succ, NSError *error) {
                             if (succ) {
                                 NSLog(@"Publish nameChanging to <%@> success!",topic);
                             }else

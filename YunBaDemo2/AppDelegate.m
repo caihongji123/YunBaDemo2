@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "GlobalAttribute.h"
 #import "YunBaService.h"
+#import "Notifications.h"
 @import UserNotifications;
 @interface AppDelegate ()
 
@@ -45,7 +46,9 @@
     [YunBaService setupWithAppkey:@"57de472618fbf4e0707299c9"];
     
     // register remote notification
-    [self registerRemoteNotification];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self registerRemoteNotification];;
+    });
     
     return YES;
 }
@@ -73,12 +76,15 @@
 // for device token
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSLog(@"get Device Token: %@", [NSString stringWithFormat:@"Device Token: %@", deviceToken]);
+    //[Notifications sendNotification:[NSString stringWithFormat:@"get Device Token:%@",deviceToken]];
     // uncomment to store device token to YunBa
     [YunBaService storeDeviceToken:deviceToken resultBlock:^(BOOL succ, NSError *error) {
         if (succ) {
             NSLog(@"store device token to YunBa succ");
+            //[Notifications sendNotification:@"PS.store device token to YunBa succ"];
         } else {
             NSLog(@"store device token to YunBa failed due to : %@, recovery suggestion: %@", error, [error localizedRecoverySuggestion]);
+            [Notifications sendNotification:[NSString stringWithFormat:@"store device token to YunBa failed due to : %@, recovery suggestion: %@", error, [error localizedRecoverySuggestion]]];
         }
     }];
 }
@@ -89,10 +95,11 @@
     }
     
     NSLog(@"didFailToRegisterForRemoteNotificationsWithError Error: %@", error);
+    [Notifications sendNotification:[NSString stringWithFormat:@"didFailToRegisterForRemoteNotificationsWithError Error: %@", error]];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    
+    //[Notifications sendNotification:[NSString stringWithFormat:@"received:%@",userInfo]];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

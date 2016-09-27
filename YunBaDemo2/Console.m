@@ -11,7 +11,6 @@
 #import "LeftView.h"
 
 @interface Console ()<LeftViewDelegate>
-@property (weak, nonatomic) IBOutlet UINavigationBar *naviBar;
 @property (nonatomic) BOOL statusBarHidden;
 
 @end
@@ -37,7 +36,7 @@
     
     self.sendButton.layer.cornerRadius = 6.0f;
     
-    [self topicsAndAliasesInit];
+    [self topicsAndAliasesInit:nil];
     [self addNotificationHandler];
 }
 -(void)viewWillAppear:(BOOL)animated {

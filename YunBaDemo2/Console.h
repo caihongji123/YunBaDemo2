@@ -11,12 +11,13 @@
 #import "YunBaService.h"
 #import "GlobalAttribute.h"
 @class LeftView;
-@interface Console : UIViewController <UITableViewDelegate,UITableViewDataSource,ActionControllerDelegate>
+@interface Console : UIViewController <UITableViewDelegate,UITableViewDataSource,ActionControllerDelegate,UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UIView         * mainView;
 @property (weak, nonatomic) IBOutlet UITableView *mainViewTableView;
 @property (weak, nonatomic) IBOutlet LeftView       * leftView;
 @property (weak, nonatomic) IBOutlet UITableView    * lefViewTableView;
 @property (nonatomic,copy) NSString                 * selectedTopic;
+@property (weak, nonatomic) IBOutlet UINavigationItem *naviBarTitle;
 
 @property (weak, nonatomic) IBOutlet UIButton *sendButton;
 @property (weak, nonatomic) IBOutlet UITextField *sendField;
@@ -34,7 +35,7 @@
 -(UIView *)leftView_tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
 -(CGFloat)leftView_tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 -(void)leftView_tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
--(void)topicsAndAliasesInit;
+-(void)topicsAndAliasesInit:(void(^)(void))completon;
 @end
 @interface Console (mainView)
 -(NSInteger)mainView_numberOfSectionsInTableView:(UITableView *)tableView;
