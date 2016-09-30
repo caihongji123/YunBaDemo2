@@ -72,7 +72,7 @@ static GlobalAttribute *globalAttr;
     if ([_msgArray[0] isEqualToString:identifier]) {
         _msgArray[1] = [NSMutableArray new];
         for (NSData * subData in array) {
-            MsgObj *obj = [NSKeyedUnarchiver unarchiveObjectWithData:subData];
+            id obj = [NSKeyedUnarchiver unarchiveObjectWithData:subData];
             [_msgArray[1] addObject:obj];
         }
     }
@@ -122,7 +122,7 @@ static GlobalAttribute *globalAttr;
     _msgArray[0] = identifier;
     _msgArray[1] = [NSMutableArray new];
     for (NSData * subData in array) {
-        MsgObj *obj = [NSKeyedUnarchiver unarchiveObjectWithData:subData];
+        id obj = [NSKeyedUnarchiver unarchiveObjectWithData:subData];
         [_msgArray[1] addObject:obj];
     }
 }
@@ -142,56 +142,3 @@ static GlobalAttribute *globalAttr;
 }
 @end
 
-// MsgObj
-@implementation MsgObj
-#define MSGOBJ_TEXT_KEY  @"msgObj_text"
-#define MSGOBJ_TOPIC_KEY @"msgObj_topic"
-#define MSGOBJ_ALIAS_KEY @"msgObj_alias"
-#define MSGOBJ_TYPE2_KEY  @"msgObj_type2"
--(instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super init]) {
-        if (aDecoder == nil) {return nil;}
-        _topic = [aDecoder decodeObjectForKey:MSGOBJ_TOPIC_KEY];
-        _alias = [aDecoder decodeObjectForKey:MSGOBJ_ALIAS_KEY];
-        _text = [aDecoder decodeObjectForKey:MSGOBJ_TEXT_KEY];
-        _type2 = ((NSNumber *)[aDecoder decodeObjectForKey:MSGOBJ_TYPE2_KEY]).integerValue;
-    }
-    return self;
-}
--(void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:_topic forKey:MSGOBJ_TOPIC_KEY];
-    [aCoder encodeObject:_alias forKey:MSGOBJ_ALIAS_KEY];
-    [aCoder encodeObject:_text forKey:MSGOBJ_TEXT_KEY];
-    [aCoder encodeObject:@(_type2) forKey:MSGOBJ_TYPE2_KEY];
-}
--(instancetype)initWithTopic:(NSString *)topic payload:(NSData *)payload {
-    if (self = [super init]) {
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:payload options:kNilOptions error:nil];
-        if (!dict) {return nil;}
-        NSString *topicType = [dict objectForKey:@"Type"];  if(!topicType){return nil;}
-        _alias = [dict objectForKey:@"AliasName"];          if(!_alias){return nil;}
-        _text = [dict objectForKey:@"Text"];                if(!_text){return nil;}
-        _topic = topic;
-        if ([topicType isEqualToString:@"Topic"])    {_type2 = MsgObjType2Topic;}
-        else                                         {_type2 = MsgObjType2Alias;}
-        //if ([_alias isEqualToString:[GlobalAttribute sharedInstance].alias])   {return nil;}
-    }
-    return self;
-}
-@end
-
-@implementation MsgNameChanging
--(instancetype)initWithPayload:(NSData *)data {
-    if (self = [super init]) {
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-        if (![[dict objectForKey:@"Type"] isEqualToString:@"ChangeName"]) {
-            return nil;
-        }
-        _type = MsgObjType2ChangeName;
-        _oldAlias = [dict objectForKey:@"OldAlias"]; if(!_oldAlias) {return nil;}
-        _alias = [dict objectForKey:@"NewAlias"];    if(!_alias) {return nil;}
-    }
-    return self;
-}
-
-@end

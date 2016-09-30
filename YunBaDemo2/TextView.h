@@ -12,3 +12,8 @@
 -(instancetype)initWithTitle:(NSString *)title text:(NSString *)text width:(CGFloat)width;
 +(CGFloat)heightWithTitle:(NSString *)title text:(NSString *)text width:(CGFloat)width;
 @end
+
+@interface TextImageView : UIView
+-(instancetype)initWithTitle:(NSString *)title image:(UIImage *)image width:(CGFloat)width target:(id)target action:(SEL)action;
++(CGFloat)heightWithTilte:(NSString *)title image:(UIImage *)img width:(CGFloat)width;
+@end

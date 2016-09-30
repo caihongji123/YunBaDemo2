@@ -74,7 +74,6 @@
         }else { [Notifications sendNotification:@"Alias has already exist!"]; }
     }];
     [self.view endEditing:YES];
-    
 }
 - (IBAction)qosLevelChange:(UISegmentedControl *)sender {
     NSInteger qos = [sender selectedSegmentIndex];
@@ -165,7 +164,6 @@
     }
     return cell;
 }
-
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
     [self.view endEditing:YES];
 }

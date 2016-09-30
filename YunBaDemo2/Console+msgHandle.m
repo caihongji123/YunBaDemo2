@@ -8,66 +8,77 @@
 
 #import "Console.h"
 #import "Notifications.h"
+#import "QNGlobal.h"
 
 @implementation Console (msgHandle)
+
 #pragma mark - KVO
-- (void)addNotificationHandler {
+-(void)addNotificationHandler {
     NSNotificationCenter *defaultNC = [NSNotificationCenter defaultCenter];
     [defaultNC addObserver:self selector:@selector(onConnectionStateChanged:) name:kYBConnectionStatusChangedNotification object:nil];
     [defaultNC addObserver:self selector:@selector(onMessageReceived:) name:kYBDidReceiveMessageNotification object:nil];
     [defaultNC addObserver:self selector:@selector(onPresenceReceived:) name:kYBDidReceivePresenceNotification object:nil];
 }
-- (void)onConnectionStateChanged:(NSNotification *)notification {
-    if ([YunBaService isConnected]) {
-        NSLog(@"didConnect");
-    } else {
+-(void)onConnectionStateChanged:(NSNotification *)notification {
+    if ([YunBaService isConnected]) { NSLog(@"didConnect"); }
+    else {
         NSString *disconnectPrompt = [[notification object] objectForKey:kYBDisconnectPromptKey];
         NSString *prompt = [NSString stringWithFormat:@"disconnected [%@]", disconnectPrompt];
         NSLog(@"%@",prompt);
     }
 }
-- (void)onMessageReceived:(NSNotification *)notification {
+-(void)onMessageReceived:(NSNotification *)notification {
     if ([GlobalAttribute sharedInstance].alias) { [self messageHandle:notification]; }
-    else {
-        [self topicsAndAliasesInit:^{ [self messageHandle:notification];}];
-    }
+    else { [self topicsAndAliasesInit:^{ [self messageHandle:notification];}]; }
     
 }
-- (void)onPresenceReceived:(NSNotification *)notification {
+-(void)onPresenceReceived:(NSNotification *)notification {
     if ([GlobalAttribute sharedInstance].alias) { [self presenceHandle:notification]; }
-    else {
-        [self topicsAndAliasesInit:^{ [self presenceHandle:notification]; }];
-    }
+    else { [self topicsAndAliasesInit:^{ [self presenceHandle:notification]; }]; }
 }
-#pragma mark - YB message and presence received handle
-- (void)removeNotificationHandler {
+-(void)removeNotificationHandler {
     NSNotificationCenter *defaultNC = [NSNotificationCenter defaultCenter];
     [defaultNC removeObserver:self];
 }
+
+#pragma mark - YB message and presence received handle
 -(void)messageHandle:(NSNotification *)notification {
     YBMessage *message = [notification object];
     NSLog(@"new message, %zu bytes, topic=%@", (unsigned long)[[message data] length], [message topic]);
     NSString *payloadString = [[NSString alloc] initWithData:[message data] encoding:NSUTF8StringEncoding];
     NSLog(@"data: %@ %@", payloadString,[message data]);
+    
+    // 检查是否是改名消息
     MsgNameChanging *nameChanging = [[MsgNameChanging alloc] initWithPayload:[message data]];
     if (nameChanging) {
         [[GlobalAttribute sharedInstance] changeAliasName:nameChanging];
         [self topicsAndAliasesInit:nil];
         return;
     }
-    MsgObj *obj = [[MsgObj alloc] initWithTopic:[message topic] payload:[message data]];
-    if ([obj.alias isEqualToString:[GlobalAttribute sharedInstance].alias])   {obj = nil;}
-    if (obj) {
-        NSString *identifier = [[GlobalAttribute sharedInstance] addObj:obj isRecv:YES];
+    // 检查是否是图片消息
+    __block NSString *identifier;
+    MsgImage *msgImage = [[MsgImage alloc] initWithTopic:[message topic] payload:[message data]];
+    if (msgImage) {
+        if ([msgImage.alias isEqualToString:[GlobalAttribute sharedInstance].alias])   {return;}
+        [QNGlobal getImageWitKey:msgImage.QNKey complete:^(BOOL success, UIImage *image) {
+            if (success) {
+                msgImage.imageData = UIImageJPEGRepresentation(image, 1.0);
+                identifier = [[GlobalAttribute sharedInstance] addObj:msgImage isRecv:YES];
+                [self.mainViewTableView reloadData];
+                [self scrollToBottom:self.mainViewTableView];
+                [self sendNotiByJudge:msgImage identifier:identifier];
+            }
+        }];
+        return;
+    }
+    // 检查是否是文本消息
+    MsgObj *msg = [[MsgObj alloc] initWithTopic:[message topic] payload:[message data]];
+    if (msg) {
+        if ([msg.alias isEqualToString:[GlobalAttribute sharedInstance].alias])   {return;}
+        identifier = [[GlobalAttribute sharedInstance] addObj:msg isRecv:YES];
         [self.mainViewTableView reloadData];
         [self scrollToBottom:self.mainViewTableView];
-        if (![[GlobalAttribute sharedInstance].msgArray[0] isEqualToString:identifier]) {
-            if (![obj.topic isEqualToString:[GlobalAttribute sharedInstance].alias]) {
-                [Notifications sendNotification:[NSString stringWithFormat:@"Message from: [%@] alias: [%@]",obj.topic,obj.alias]];
-            }else {
-                [Notifications sendNotification:[NSString stringWithFormat:@"Message from alias: [%@]",obj.alias]];
-            }
-        }
+        [self sendNotiByJudge:msg identifier:identifier];
     }
 }
 -(void)presenceHandle:(NSNotification *)notification {
@@ -81,6 +92,15 @@
     [Notifications sendNotification:curMsg];
     [self topicsAndAliasesInit:nil];
 }
-
+#pragma mark - helper
+-(void)sendNotiByJudge:(MsgObj *)obj identifier:(NSString *)identifier {
+    if (![[GlobalAttribute sharedInstance].msgArray[0] isEqualToString:identifier]) {
+        if (![obj.topic isEqualToString:[GlobalAttribute sharedInstance].alias]) {
+            [Notifications sendNotification:[NSString stringWithFormat:@"Message from: [%@] alias: [%@]",obj.topic,obj.alias]];
+        }else {
+            [Notifications sendNotification:[NSString stringWithFormat:@"Message from alias: [%@]",obj.alias]];
+        }
+    }
+}
 
 @end

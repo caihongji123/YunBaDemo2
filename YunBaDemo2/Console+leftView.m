@@ -16,6 +16,7 @@
 
 #pragma mark - Action <getTopicList> <getAliasList>
 -(void)getAliasWithTopic:(NSArray *)topicArray currentIndex:(NSInteger)currentIndex completon:(void(^)(void))completon{
+    if (topicArray.count == 0) {return;}
     [YunBaService getAliasListV2:topicArray[currentIndex] resultBlock:^(NSDictionary *res, NSError *error) {
         if (error.code != kYBErrorNoError) { return; }
         NSMutableArray *aliases = [[res objectForKey:@"alias"] mutableCopy];
@@ -45,33 +46,19 @@
                 return;
             }
             [GlobalAttribute sharedInstance].topicAndAliases = [NSMutableDictionary new];
-            [self getAliasWithTopic:res currentIndex:0 completon:completon];
-//            for (NSString *topic in res) {
-//                [YunBaService getAliasListV2:topic resultBlock:^(NSDictionary *res, NSError *error) {
-//                    if (error.code != kYBErrorNoError) {
-//                        return;
-//                    }
-//                    NSMutableArray *aliases = [[res objectForKey:@"alias"] mutableCopy];
-//                    if ([aliases containsObject:[GlobalAttribute sharedInstance].alias]) {
-//                        [aliases removeObject:[GlobalAttribute sharedInstance].alias];
-//                    }
-//                    [[GlobalAttribute sharedInstance].topicAndAliases setObject:aliases forKey:topic];
-//                    //NSLog(@"%@",[GlobalAttribute sharedInstance].topicAndAliases);
-//                    [self.lefViewTableView reloadData];
-//                }];
-//            }
             
+            [self getAliasWithTopic:res currentIndex:0 completon:completon];
         }];
     }];
-    
 }
--(void)topicAction:(UIButton *)sender forEvent:(UIEvent *)event {
+-(void)topicTap:(UIButton *)sender forEvent:(UIEvent *)event {
     NSLog(@"action");
     NSLog(@"%@",sender.titleLabel.text);
     NSString *topic = [sender.titleLabel.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     [[GlobalAttribute sharedInstance] changeMsgArray:topic type:MsgObjType2Topic];
     [self.mainViewTableView reloadData];
     [self.leftView hideLeftView:^{ [self deHighlight:sender]; }];
+    [self scrollToBottom:self.mainViewTableView];
     self.naviBarTitle.title = topic;
 }
 -(void)topicLongpressed:(UILongPressGestureRecognizer *)reco {
@@ -80,25 +67,7 @@
         NSString *topic = [button.titleLabel.text stringByReplacingOccurrencesOfString:@" " withString:@""];
         self.selectedTopic = topic;
         CGPoint location = [reco locationInView:[[UIApplication sharedApplication].delegate window]];
-        [ActionController beginActionControlWithTarget:self Titles:@[@"Unsubscribe",@"Subscribe presence",@"UnSubscribe presence"] location:location userObj:reco.view];
-    }
-}
--(void)highlight:(UIButton *)sender {
-    sender.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.3f];
-}
--(void)deHighlight:(UIButton *)sender {
-    sender.backgroundColor = [UIColor clearColor];
-}
--(void)actionControlDidFinished:(id)userObj isCancel:(BOOL)value {
-    UIButton *button = userObj;
-    [self deHighlight:button];
-}
--(void)actionControlDidAct:(NSInteger)index {
-    switch (index) {
-        case 0: [self unsubscribeTopic];break;
-        case 1: [self subscribePresence];break;
-        case 2: [self unsubscribePresence];break;
-        default:NSLog(@"unknown ActionController action"); break;
+        [ActionController beginActionCardControlWithTarget:self Titles:@[@"Unsubscribe",@"Subscribe presence",@"UnSubscribe presence"] location:location userObj:reco.view identifier:@"leftViewAction"];
     }
 }
 
@@ -135,6 +104,14 @@
     }];
 }
 
+#pragma mark - helper
+-(void)highlight:(UIButton *)sender {
+    sender.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.3f];
+}
+-(void)deHighlight:(UIButton *)sender {
+    sender.backgroundColor = [UIColor clearColor];
+}
+
 #pragma mark - tableView
 -(NSInteger)leftView_numberOfSectionsInTableView:(UITableView *)tableView {
     return [[GlobalAttribute sharedInstance].topicAndAliases allKeys].count;
@@ -152,7 +129,7 @@
     [button setTitle:[NSString stringWithFormat:@"   %@",topic] forState:UIControlStateNormal];
     [button setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    [button addTarget:self action:@selector(topicAction:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(topicTap:forEvent:) forControlEvents:UIControlEventTouchUpInside];
     [button addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(topicLongpressed:)]];
     button.backgroundColor = [UIColor clearColor];
     button.frame = CGRectMake(10, 0, self.leftView.frame.size.width - 20, TABLEVIEW_HEADER_HEIGHT - 1);
@@ -196,7 +173,9 @@
     NSString *alias = ((NSArray *)[[GlobalAttribute sharedInstance].topicAndAliases objectForKey:topic])[indexPath.row];
     [[GlobalAttribute sharedInstance] changeMsgArray:alias type:MsgObjType2Alias];
     [self.mainViewTableView reloadData];
-    [self.leftView hideLeftView:nil];
+    [self.leftView hideLeftView:^{
+        [self scrollToBottom:self.mainViewTableView];
+    }];
     self.naviBarTitle.title = alias;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

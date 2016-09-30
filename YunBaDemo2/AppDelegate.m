@@ -20,6 +20,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    // 这玩意儿可以用来获取字体的fontName
 //    NSArray *familyNames = [UIFont familyNames];
 //    for(NSString *familyName in familyNames ) {
 //        printf("Family: %s \n",[familyName UTF8String]);
@@ -29,6 +30,7 @@
 //        }
 //    }
     // Override point for customization after application launch.
+    
     // set yunba log level
     kYBLogLevel = kYBLogLevelDebug;
     
@@ -46,10 +48,11 @@
     [YunBaService setupWithAppkey:@"57de472618fbf4e0707299c9"];
     
     // register remote notification
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self registerRemoteNotification];;
     });
-    
+    // clear badge
+    application.applicationIconBadgeNumber = 0;
     return YES;
 }
 
@@ -114,6 +117,8 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    // clear badge
+    application.applicationIconBadgeNumber = 0;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {

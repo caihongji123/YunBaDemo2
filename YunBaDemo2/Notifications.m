@@ -18,6 +18,7 @@
 @interface NotiView : UIView
 @property (nonatomic,strong) UILabel *textLabel;
 @property (nonatomic)        BOOL     isRemove;
+@property (nonatomic)        BOOL     isTouch;
 @end
 
 @implementation NotiView
@@ -27,14 +28,14 @@
         UIFont *font = [UIFont fontWithName:TEXT_FONT size:16];
         CGSize contentSize = [Notifications sizeFromCurrentWidth:screenSize.width - 32 text:text font:font];
         
-        self.frame = CGRectMake(8, -(contentSize.height + 16 + 8), screenSize.width - 16, contentSize.height + 16);
+        self.frame = CGRectMake(8, -(contentSize.height + 16 + 8), screenSize.width - 16, contentSize.height + 32);
         self.backgroundColor = STYLE_COLOR;
         self.layer.cornerRadius = 8.0f;
         self.layer.shadowOpacity = 0.4f;
         
         self.textLabel = [[UILabel alloc] init];
         self.textLabel.numberOfLines = 0;
-        self.textLabel.frame = CGRectMake(8, 8, screenSize.width - 32, contentSize.height);
+        self.textLabel.frame = CGRectMake(8, 16, screenSize.width - 32, contentSize.height);
         self.textLabel.text = text;
         [self.textLabel setFont:font];
         self.textLabel.textColor = [UIColor whiteColor];
@@ -44,12 +45,34 @@
         UISwipeGestureRecognizer *swipeU = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
         swipeU.direction = UISwipeGestureRecognizerDirectionUp;
         UISwipeGestureRecognizer *swipeR = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
+        UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
         swipeR.direction = UISwipeGestureRecognizerDirectionRight;
         self.textLabel.userInteractionEnabled = YES;
-        [self.textLabel addGestureRecognizer:swipeR];
-        [self.textLabel addGestureRecognizer:swipeU];
+        //[self.textLabel addGestureRecognizer:swipeR];
+        //[self.textLabel addGestureRecognizer:swipeU];
+        [self.textLabel addGestureRecognizer:pan];
+        _isTouch = NO;
     }
     return self;
+}
+-(void)pan:(UIPanGestureRecognizer *)sender {
+    static float lastPercentInView;
+    UIWindow *win = [[UIApplication sharedApplication].delegate window];
+    CGPoint point = [sender translationInView:win];
+    CGFloat currentPercentInView;
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        currentPercentInView = point.y / win.frame.size.width;
+        lastPercentInView = currentPercentInView;
+    }else if (sender.state == UIGestureRecognizerStateChanged) {
+        currentPercentInView =point.y / win.frame.size.width;
+        CGRect frame = self.frame;
+        CGFloat offset = frame.size.height * (currentPercentInView - lastPercentInView);
+        frame.origin.y += offset;
+        self.frame = frame;
+        lastPercentInView = currentPercentInView;
+    }else if (sender.state == UIGestureRecognizerStateEnded ) {
+        [Notifications deleteViewWithAnimate:self up:YES];
+    }
 }
 -(void)swipe:(UISwipeGestureRecognizer *)sender {
     sender.direction == UISwipeGestureRecognizerDirectionUp ?
@@ -60,17 +83,12 @@
 
 @implementation Notifications
 +(void)sendNotification:(NSString *)content {
-    
     NotiView *notiView = [[NotiView alloc] initWithText:content];
-    
     UIWindow *window = [[UIApplication sharedApplication].delegate window];
     [window addSubview:notiView];
     [window bringSubviewToFront:notiView];
-    
     [Notifications animateWithView:notiView];
-    
 }
-
 +(void)animateWithView:(NotiView *)view {
     [UIView animateWithDuration:0.8f
                           delay:0
@@ -83,12 +101,11 @@
                          view.frame = frame;
                          
     } completion:^(BOOL finished) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [Notifications deleteViewWithAnimate:view up:YES];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if (!view.isTouch) { [Notifications deleteViewWithAnimate:view up:YES]; }
         });
     }];
 }
-
 +(void)deleteViewWithAnimate:(NotiView *)view up:(BOOL)up{
     if (!view.isRemove) {
         view.isRemove = 1;
@@ -102,7 +119,6 @@
         }];
     }
 }
-
 +(CGSize)sizeFromCurrentWidth:(CGFloat)width text:(NSString *)text font:(UIFont *)font{
     CGSize size = CGSizeMake(width, 0);
     CGSize lableSize = [text boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin |NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:font} context:nil].size;

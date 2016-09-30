@@ -9,8 +9,10 @@
 #import "Console.h"
 #import "YunBaService.h"
 #import "LeftView.h"
+#import "Notifications.h"
+#import "ImagePreview.h"
 
-@interface Console ()<LeftViewDelegate>
+@interface Console ()<LeftViewDelegate,ImagePreviewDelegate>
 @property (nonatomic) BOOL statusBarHidden;
 
 @end
@@ -32,22 +34,18 @@
     label.layer.masksToBounds = YES;
     label.layer.cornerRadius = 5.0f;
     label.userInteractionEnabled = YES;
-    [label addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showLeftView:)]];
-    
+    [label addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addImageAction:)]];
     self.sendButton.layer.cornerRadius = 6.0f;
-    
     [self topicsAndAliasesInit:nil];
     [self addNotificationHandler];
 }
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    // 键盘监听
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(p_keyboardWillDismiss:) name:UIKeyboardWillHideNotification object:nil];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    
 }
 #pragma mark - others
 -(BOOL)prefersStatusBarHidden {
@@ -62,92 +60,130 @@
         [self setNeedsStatusBarAppearanceUpdate];
     }];
 }
--(void)showLeftView:(id)sender {
+- (IBAction)showLeftView:(id)sender {
     [self.leftView showLeftView];
+}
+#pragma mark - image
+-(void)addImageAction:(id)sender {
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    picker.delegate = self;
+    picker.allowsEditing = NO;
+    [self presentViewController:picker animated:YES completion:nil];
+}
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    UIImage *image = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+    NSData *method = [self imageWithImage:image scaledToSize:CGSizeMake(image.size.width * 0.6, image.size.height * 0.6)];
+    while (method.length/1000 > 500) {
+        UIImage *tmp = [UIImage imageWithData:method];
+        method = [self imageWithImage:tmp scaledToSize:CGSizeMake(tmp.size.width * 0.6, tmp.size.height * 0.6)];
+    }
+    NSLog(@"method:%luKB",(unsigned long)method.length / 1000);
+    [picker dismissViewControllerAnimated:YES completion:^{
+        UIImage *img = [[UIImage alloc] initWithData:method];
+        ImagePreview *preView = [[ImagePreview alloc] initWithImage:img locationY:self.bottomView.frame.origin.y];
+        preView.delegate = self;
+        [preView show];
+    }];
+}
+-(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+-(void)ImagePreview:(ImagePreview *)preView didConfrim:(BOOL)value {
+    if (value == YES) {[self sendImage:preView.image];}
 }
 #pragma mark - keyboard
 -(void)p_keyboardWillShow:(NSNotification *)notification {
     NSDictionary *userInfo = [notification userInfo];
     NSValue *aValue = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
     CGRect keyboardRect = [aValue CGRectValue];
-    [self constantWithView:self.mainView identifier:@"BottomViewBottm"].constant = keyboardRect.size.height;
+    [self constraintWithView:self.mainView identifier:@"BottomViewBottm"].constant = keyboardRect.size.height;
     [self.view layoutIfNeeded];
     [self scrollToBottom:self.mainViewTableView];
     
 }
 -(void)p_keyboardWillDismiss:(NSNotification *)notification {
     [self.view layoutIfNeeded];
-    [self constantWithView:self.mainView identifier:@"BottomViewBottm"].constant = 0;
+    [self constraintWithView:self.mainView identifier:@"BottomViewBottm"].constant = 0;
+}
+#pragma mark - ActionControl
+-(void)actionControlDidFinished:(id)userObj isCancel:(BOOL)value identifier:(NSString *)identifier {
+    if ([identifier isEqualToString:@"leftViewAction"]) {
+        UIButton *button = userObj;
+        [self deHighlight:button];
+    }
+}
+-(void)actionControlDidAct:(NSInteger)index identifier:(NSString *)identifier {
+    if ([identifier isEqualToString:@"leftViewAction"]) {
+        switch (index) {
+            case 0: [self unsubscribeTopic];break;
+            case 1: [self subscribePresence];break;
+            case 2: [self unsubscribePresence];break;
+            default:NSLog(@"unknown ActionController action"); break;
+        }
+    }else if ([identifier isEqualToString:@"noti"]) {
+        [self addRemindAliasWithIndex:index];
+    }
 }
 
 #pragma mark - tableView routing
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if(tableView.tag == 11)
-        return [self leftView_numberOfSectionsInTableView:tableView];
-    else
-        return [self mainView_numberOfSectionsInTableView:tableView];
+    if(tableView.tag == 11) return [self leftView_numberOfSectionsInTableView:tableView];
+    else                    return [self mainView_numberOfSectionsInTableView:tableView];
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView.tag == 11)
-        return [self leftView_tableView:tableView numberOfRowsInSection:section];
-    else
-        return [self mainView_tableView:tableView numberOfRowsInSection:section];
+    if (tableView.tag == 11)  return [self leftView_tableView:tableView numberOfRowsInSection:section];
+    else                      return [self mainView_tableView:tableView numberOfRowsInSection:section];
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView.tag == 11)
-        return [self leftView_tableView:tableView cellForRowAtIndexPath:indexPath];
-    else
-        return [self mainView_tableView:tableView cellForRowAtIndexPath:indexPath];
+    if (tableView.tag == 11) return [self leftView_tableView:tableView cellForRowAtIndexPath:indexPath];
+    else                     return [self mainView_tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (tableView.tag == 11)
-        return [self leftView_tableView:tableView viewForHeaderInSection:section];
-    else
-        return [self mainView_tableView:tableView viewForHeaderInSection:section];
+    if (tableView.tag == 11) return [self leftView_tableView:tableView viewForHeaderInSection:section];
+    else                     return [self mainView_tableView:tableView viewForHeaderInSection:section];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (tableView.tag == 11)
-        return [self leftView_tableView:tableView heightForHeaderInSection:section];
-    else
-        return [self mainView_tableView:tableView heightForHeaderInSection:section];
+    if (tableView.tag == 11) return [self leftView_tableView:tableView heightForHeaderInSection:section];
+    else                     return [self mainView_tableView:tableView heightForHeaderInSection:section];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView.tag == 11)
-        return [self leftView_tableView:tableView heightForRowAtIndexPath:indexPath];
-    else
-        return [self mainView_tableView:tableView heightForRowAtIndexPath:indexPath];
+    if (tableView.tag == 11) return [self leftView_tableView:tableView heightForRowAtIndexPath:indexPath];
+    else                     return [self mainView_tableView:tableView heightForRowAtIndexPath:indexPath];
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView.tag == 11)
-        [self leftView_tableView:tableView didSelectRowAtIndexPath:indexPath];
-    else
-        [self mainView_tableView:tableView didSelectRowAtIndexPath:indexPath];
+    if (tableView.tag == 11) [self leftView_tableView:tableView didSelectRowAtIndexPath:indexPath];
+    else                     [self mainView_tableView:tableView didSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark - helper
--(NSLayoutConstraint *)constantWithView:(UIView *)view identifier:(NSString *)identifier {
+-(NSLayoutConstraint *)constraintWithView:(UIView *)view identifier:(NSString *)identifier {
     for (NSLayoutConstraint *con in view.constraints)
         if ([con.identifier isEqualToString:identifier]) { return con; }
     return nil;
 }
-
 -(BOOL)isNotEmpty:(NSString *)text {
     return !([[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]== 0);
 }
-
 - (void)scrollToBottom:(UITableView *)tableView {
     NSUInteger sectionCount = [tableView numberOfSections];
     if (sectionCount) {
-        
         NSUInteger rowCount = [tableView numberOfRowsInSection:0];
         if (rowCount) {
-            
             NSUInteger ii[2] = {0, rowCount - 1};
-            NSIndexPath* indexPath = [NSIndexPath indexPathWithIndexes:ii length:2];
+            NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes:ii length:2];
             [tableView scrollToRowAtIndexPath:indexPath
                              atScrollPosition:UITableViewScrollPositionBottom animated:YES];
         }
     }
+}
+- (NSData *)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize {
+    UIGraphicsBeginImageContext(newSize);
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
+    UIImage * newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return UIImageJPEGRepresentation(newImage, 0.8);
 }
 
 @end

@@ -11,23 +11,24 @@
 #import "YunBaService.h"
 #import "GlobalAttribute.h"
 @class LeftView;
-@interface Console : UIViewController <UITableViewDelegate,UITableViewDataSource,ActionControllerDelegate,UITextFieldDelegate>
-@property (weak, nonatomic) IBOutlet UIView         * mainView;
+@interface Console : UIViewController <UITableViewDelegate,UITableViewDataSource,ActionControllerDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@property (weak, nonatomic) IBOutlet UIView             * mainView;
 @property (weak, nonatomic) IBOutlet UITableView *mainViewTableView;
-@property (weak, nonatomic) IBOutlet LeftView       * leftView;
-@property (weak, nonatomic) IBOutlet UITableView    * lefViewTableView;
-@property (nonatomic,copy) NSString                 * selectedTopic;
-@property (weak, nonatomic) IBOutlet UINavigationItem *naviBarTitle;
-
-@property (weak, nonatomic) IBOutlet UIButton *sendButton;
-@property (weak, nonatomic) IBOutlet UITextField *sendField;
--(NSLayoutConstraint *)constantWithView:(UIView *)view identifier:(NSString *)identifier;
+@property (weak, nonatomic) IBOutlet LeftView           * leftView;
+@property (weak, nonatomic) IBOutlet UITableView        * lefViewTableView;
+@property (weak, nonatomic) IBOutlet UIView             * bottomView;
+@property (nonatomic,copy)           NSString           * selectedTopic;
+@property (weak, nonatomic) IBOutlet UINavigationItem   * naviBarTitle;
+@property (weak, nonatomic) IBOutlet UIButton           * sendButton;
+@property (weak, nonatomic) IBOutlet UITextField        * sendField;
+-(NSLayoutConstraint *)constraintWithView:(UIView *)view identifier:(NSString *)identifier;
 -(BOOL)isNotEmpty:(NSString *)text;
 - (void)scrollToBottom:(UITableView *)tableView;
 
 @end
 
 @interface Console (leftView)
+/********************   tableView ********************/
 -(NSInteger)leftView_numberOfSectionsInTableView:(UITableView *)tableView;
 -(NSInteger)leftView_tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 -(UITableViewCell *)leftView_tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
@@ -35,9 +36,16 @@
 -(UIView *)leftView_tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
 -(CGFloat)leftView_tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 -(void)leftView_tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+/****************************************************/
 -(void)topicsAndAliasesInit:(void(^)(void))completon;
+-(void)deHighlight:(UIButton *)sender;
+-(void)highlight:(UIButton *)sender;
+-(void)unsubscribeTopic;
+-(void)subscribePresence;
+-(void)unsubscribePresence;
 @end
 @interface Console (mainView)
+/******************** tableView ********************/
 -(NSInteger)mainView_numberOfSectionsInTableView:(UITableView *)tableView;
 -(NSInteger)mainView_tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 -(UITableViewCell *)mainView_tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
@@ -45,6 +53,9 @@
 -(UIView *)mainView_tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
 -(CGFloat)mainView_tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
 -(void)mainView_tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+/**************************************************/
+-(void)addRemindAliasWithIndex:(NSInteger)index;
+-(void)sendImage:(UIImage *)image;
 @end
 
 @interface Console (msgHandle)

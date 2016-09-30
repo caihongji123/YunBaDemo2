@@ -69,3 +69,50 @@
     
 }
 @end
+
+@implementation TextImageView
+#define IMAGE_VIEW_HEIGHT 80
+-(instancetype)initWithTitle:(NSString *)title image:(UIImage *)image width:(CGFloat)width target:(id)target action:(SEL)action {
+    if (self = [super init]) {
+        // parentView init
+        self.backgroundColor = [UIColor clearColor];
+        // titleLabel init
+        UILabel *titleLabel = [[UILabel alloc] init];
+        UIFont *titleFont = [UIFont fontWithName:TOPIC_FONT size:17];
+        CGFloat titleWidth = width - 8;
+        CGSize titleSize = [TextView sizeFromCurrentWidth:titleWidth text:@"t" font:titleFont];
+        titleLabel.text = title;
+        titleLabel.numberOfLines = 1;
+        titleLabel.frame = CGRectMake(4, 4, titleWidth, titleSize.height);
+        titleLabel.font = titleFont;
+        titleLabel.textColor = [UIColor blackColor];
+        
+        // imageView init;
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        CGFloat imgWidth,imgHeight;
+        if (image.size.width > width - 8)
+        { imgWidth = width - 8;  imgHeight = imgWidth * (image.size.height / image.size.width); }
+        else   { imgWidth = image.size.width; imgHeight = image.size.height; }
+        imageView.frame = CGRectMake(4, titleLabel.frame.size.height + 4,imgWidth, imgHeight);
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        imageView.userInteractionEnabled = YES;
+        [imageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:target action:action]];
+        // add view
+        CGRect frame = CGRectZero;
+        frame.size.width = width;
+        frame.size.height = 4 + titleLabel.frame.size.height + 4 + imageView.frame.size.height + 4;
+        self.frame = frame;
+        [self addSubview:titleLabel]; [self addSubview:imageView];
+    }
+    return self;
+}
++(CGFloat)heightWithTilte:(NSString *)title image:(UIImage *)img width:(CGFloat)width {
+    UIFont *titleFont = [UIFont fontWithName:TEXT_FONT_BOLD size:17];
+    CGSize titleSize = [TextView sizeFromCurrentWidth:width - 8 text:@"t" font:titleFont];
+    CGFloat imgWidth,imgHeight;
+    if (img.size.width > width - 8)
+           { imgWidth = width - 8;  imgHeight = imgWidth * (img.size.height / img.size.width); }
+    else   { imgWidth = img.size.width; imgHeight = img.size.height; }
+    return 4 + titleSize.height + 4 + imgHeight + 4;
+}
+@end
