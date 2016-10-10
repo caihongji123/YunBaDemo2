@@ -8,7 +8,6 @@
 
 #import "Console.h"
 #import "YunBaService.h"
-#import "LeftView.h"
 #import "Notifications.h"
 #import "ImagePreview.h"
 
@@ -23,12 +22,16 @@
     [super viewDidLoad];
     self.edgesForExtendedLayout=UIRectEdgeNone;
     [GlobalAttribute sharedInstance].consle = self;
-    
     CGSize screenSize = [[UIScreen mainScreen] bounds].size;
     self.mainView.frame = CGRectMake(0, 0,screenSize.width, screenSize.height);
     [self.view addSubview:self.mainView];
-    self.leftView.gestureView = self.mainView;
-    self.leftView.delegate = self;
+    self.leftView_t.delegate = self;
+    [self.leftView_t setGestureView:self.mainView withType:LeftViewTypeLeft viewRate:3/4.0f];
+    
+    self.rightView_t.delegate = self;
+    [self.rightView_t setGestureView:self.mainView withType:LeftViewTypeRight viewRate:3/4.0f];
+    self.clearAllButton.layer.cornerRadius = 6.0f;
+    self.clearAllButton.layer.masksToBounds = YES;
     // YB label
     UILabel *label = [self.mainView viewWithTag:20];
     label.layer.masksToBounds = YES;
@@ -59,9 +62,19 @@
     [UIView animateWithDuration:0.2f animations:^{
         [self setNeedsStatusBarAppearanceUpdate];
     }];
+    if (show) {
+        switch (leftView.type) {
+            case LeftViewTypeLeft: [self.lefViewTableView reloadData];break;
+            case LeftViewTypeRight: [self.rightTableView reloadData];break;
+            default:break;
+        }
+    }
 }
 - (IBAction)showLeftView:(id)sender {
-    [self.leftView showLeftView];
+    [self.leftView_t showLeftView];
+}
+- (IBAction)showRightView:(id)sender {
+    [self.rightView_t showLeftView];
 }
 #pragma mark - image
 -(void)addImageAction:(id)sender {
@@ -129,32 +142,39 @@
 
 #pragma mark - tableView routing
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if(tableView.tag == 11) return [self leftView_numberOfSectionsInTableView:tableView];
-    else                    return [self mainView_numberOfSectionsInTableView:tableView];
+    if      (tableView.tag == 11) return [self leftView_numberOfSectionsInTableView:tableView];
+    else if (tableView.tag == 12) return [self rightView_numberOfSectionsInTableView:tableView];
+    else                          return [self mainView_numberOfSectionsInTableView:tableView];
 }
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView.tag == 11)  return [self leftView_tableView:tableView numberOfRowsInSection:section];
-    else                      return [self mainView_tableView:tableView numberOfRowsInSection:section];
+    if      (tableView.tag == 11) return [self leftView_tableView:tableView numberOfRowsInSection:section];
+    else if (tableView.tag == 12) return [self rightView_tableView:tableView numberOfRowsInSection:section];
+    else                          return [self mainView_tableView:tableView numberOfRowsInSection:section];
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView.tag == 11) return [self leftView_tableView:tableView cellForRowAtIndexPath:indexPath];
-    else                     return [self mainView_tableView:tableView cellForRowAtIndexPath:indexPath];
+    if      (tableView.tag == 11) return [self leftView_tableView:tableView cellForRowAtIndexPath:indexPath];
+    else if (tableView.tag == 12) return [self rightView_tableView:tableView cellForRowAtIndexPath:indexPath];
+    else                          return [self mainView_tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    if (tableView.tag == 11) return [self leftView_tableView:tableView viewForHeaderInSection:section];
-    else                     return [self mainView_tableView:tableView viewForHeaderInSection:section];
+    if      (tableView.tag == 11) return [self leftView_tableView:tableView viewForHeaderInSection:section];
+    else if (tableView.tag == 12) return [self rightView_tableView:tableView viewForHeaderInSection:section];
+    else                          return [self mainView_tableView:tableView viewForHeaderInSection:section];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (tableView.tag == 11) return [self leftView_tableView:tableView heightForHeaderInSection:section];
-    else                     return [self mainView_tableView:tableView heightForHeaderInSection:section];
+    if      (tableView.tag == 11) return [self leftView_tableView:tableView heightForHeaderInSection:section];
+    else if (tableView.tag == 12) return [self rightView_tableView:tableView heightForHeaderInSection:section];
+    else                          return [self mainView_tableView:tableView heightForHeaderInSection:section];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView.tag == 11) return [self leftView_tableView:tableView heightForRowAtIndexPath:indexPath];
-    else                     return [self mainView_tableView:tableView heightForRowAtIndexPath:indexPath];
+    if      (tableView.tag == 11) return [self leftView_tableView:tableView heightForRowAtIndexPath:indexPath];
+    else if (tableView.tag == 12) return [self rightView_tableView:tableView heightForRowAtIndexPath:indexPath];
+    else                          return [self mainView_tableView:tableView heightForRowAtIndexPath:indexPath];
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView.tag == 11) [self leftView_tableView:tableView didSelectRowAtIndexPath:indexPath];
-    else                     [self mainView_tableView:tableView didSelectRowAtIndexPath:indexPath];
+    if      (tableView.tag == 11) [self leftView_tableView:tableView didSelectRowAtIndexPath:indexPath];
+    else if (tableView.tag == 12) return [self rightView_tableView:tableView didSelectRowAtIndexPath:indexPath];
+    else                          [self mainView_tableView:tableView didSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark - helper
@@ -184,6 +204,12 @@
     UIImage * newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return UIImageJPEGRepresentation(newImage, 0.8);
+}
+
++(CGSize)sizeFromCurrentWidth:(CGFloat)width text:(NSString *)text font:(UIFont *)font {
+    CGSize size = CGSizeMake(width, 0);
+    CGSize lableSize = [text boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin |NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:font} context:nil].size;
+    return lableSize;
 }
 
 @end

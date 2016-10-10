@@ -19,15 +19,21 @@
 #define DOT_COLOR [UIColor colorWithRed:60/255.0 green:131/255.0 blue:115/255.0 alpha:1.0]
 
 @interface GlobalAttribute : NSObject
-@property (nonatomic,strong) NSString              * alias;
-@property (nonatomic)        NSInteger               qosLevel;
-@property (atomic,strong)    NSMutableDictionary   * topicAndAliases;
-@property (nonatomic,weak)   Console               * consle;
-@property (atomic,strong,readonly) NSMutableArray  * msgArray;
-@property (nonatomic,weak)   ActionTableView       * actionTable;
+@property (nonatomic,strong) NSString                           * alias;
+@property (nonatomic)        NSInteger                            qosLevel;
+@property (atomic,strong)    NSMutableDictionary                * topicAndAliases;
+@property (nonatomic,weak)   Console                            * consle;
+@property (atomic,strong,readonly) NSMutableArray               * msgArray;
+@property (atomic,strong)    NSMutableArray<MsgNotification *>  * msgNotifications;
+@property (nonatomic,weak)   ActionTableView                    * actionTable;
 +(instancetype)sharedInstance;
 -(NSString *)addObj:(MsgObj *)obj isRecv:(BOOL)isRecv;
 -(void)deleteTopicAndAliasData:(NSString *)topic;
 -(void)changeMsgArray:(NSString *)topic type:(MsgObjType2)type;
 -(void)changeAliasName:(MsgNameChanging *)nameChanging;
+
+-(void)addMsgNotifications:(MsgNotification *)msgNoti;
+-(NSInteger)deleteMsgNotifications:(NSString *)uuid;
+-(void)deleteAllMsgNotifications;
+-(void)updateMsgNotifications;
 @end

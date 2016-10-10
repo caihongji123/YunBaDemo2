@@ -19,7 +19,6 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
     // 这玩意儿可以用来获取字体的fontName
 //    NSArray *familyNames = [UIFont familyNames];
 //    for(NSString *familyName in familyNames ) {
@@ -32,6 +31,7 @@
     // Override point for customization after application launch.
     
     // set yunba log level
+    
     kYBLogLevel = kYBLogLevelDebug;
     
     YBSetupOption *setupOption = [[YBSetupOption alloc] init];

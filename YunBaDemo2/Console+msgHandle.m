@@ -7,7 +7,6 @@
 //
 
 #import "Console.h"
-#import "Notifications.h"
 #import "QNGlobal.h"
 
 @implementation Console (msgHandle)
@@ -64,9 +63,7 @@
             if (success) {
                 msgImage.imageData = UIImageJPEGRepresentation(image, 1.0);
                 identifier = [[GlobalAttribute sharedInstance] addObj:msgImage isRecv:YES];
-                [self.mainViewTableView reloadData];
-                [self scrollToBottom:self.mainViewTableView];
-                [self sendNotiByJudge:msgImage identifier:identifier];
+                [self UIUpdate:msgImage identifier:identifier];
             }
         }];
         return;
@@ -76,9 +73,7 @@
     if (msg) {
         if ([msg.alias isEqualToString:[GlobalAttribute sharedInstance].alias])   {return;}
         identifier = [[GlobalAttribute sharedInstance] addObj:msg isRecv:YES];
-        [self.mainViewTableView reloadData];
-        [self scrollToBottom:self.mainViewTableView];
-        [self sendNotiByJudge:msg identifier:identifier];
+        [self UIUpdate:msg identifier:identifier];
     }
 }
 -(void)presenceHandle:(NSNotification *)notification {
@@ -93,13 +88,24 @@
     [self topicsAndAliasesInit:nil];
 }
 #pragma mark - helper
+// 收到消息需要及时更新界面
+-(void)UIUpdate:(MsgObj *)obj identifier:(NSString *)identifier {
+    if ([[GlobalAttribute sharedInstance].msgArray[0] isEqualToString:identifier]) {
+        [self.mainViewTableView reloadData];
+        [self scrollToBottom:self.mainViewTableView];
+    } else {
+        MsgNotification *noti = [[MsgNotification alloc] initWithMsgObj:obj];
+        [[GlobalAttribute sharedInstance] addMsgNotifications:noti];
+        [[GlobalAttribute sharedInstance] updateMsgNotifications];
+        [self.rightTableView reloadData];
+        [self sendNotiByJudge:obj identifier:identifier];
+    }
+}
 -(void)sendNotiByJudge:(MsgObj *)obj identifier:(NSString *)identifier {
-    if (![[GlobalAttribute sharedInstance].msgArray[0] isEqualToString:identifier]) {
-        if (![obj.topic isEqualToString:[GlobalAttribute sharedInstance].alias]) {
-            [Notifications sendNotification:[NSString stringWithFormat:@"Message from: [%@] alias: [%@]",obj.topic,obj.alias]];
-        }else {
-            [Notifications sendNotification:[NSString stringWithFormat:@"Message from alias: [%@]",obj.alias]];
-        }
+    if (![obj.topic isEqualToString:[GlobalAttribute sharedInstance].alias]) {
+        [Notifications sendNotification:[NSString stringWithFormat:@"Message from: [%@] alias: [%@]",obj.topic,obj.alias]];
+    }else {
+        [Notifications sendNotification:[NSString stringWithFormat:@"Message from alias: [%@]",obj.alias]];
     }
 }
 

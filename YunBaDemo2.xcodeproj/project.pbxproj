@@ -77,6 +77,7 @@
 		046B1F651D9CBF150078755E /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 046B1F641D9CBF150078755E /* libresolv.tbd */; };
 		046B1F681D9CC2970078755E /* QNGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1F671D9CC2970078755E /* QNGlobal.m */; };
 		046B1F711D9CECC90078755E /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 046B1F701D9CECC90078755E /* ImageViewController.m */; };
+		9A6C1D7D1DA0ECB6008BF09F /* Console+rightView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A6C1D7C1DA0ECB6008BF09F /* Console+rightView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -221,6 +222,7 @@
 		046B1F671D9CC2970078755E /* QNGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNGlobal.m; sourceTree = "<group>"; };
 		046B1F6F1D9CECC90078755E /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewController.h; sourceTree = "<group>"; };
 		046B1F701D9CECC90078755E /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageViewController.m; sourceTree = "<group>"; };
+		9A6C1D7C1DA0ECB6008BF09F /* Console+rightView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Console+rightView.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -262,6 +264,7 @@
 				0439B9171D8932B7000E56A8 /* Console.h */,
 				046B1DC81D9257250078755E /* Console+msgHandle.m */,
 				0439B91C1D8934B9000E56A8 /* Console+leftView.m */,
+				9A6C1D7C1DA0ECB6008BF09F /* Console+rightView.m */,
 				040F1F451D8E79EC00545F67 /* Console+mainView.m */,
 				0439B9181D8932B7000E56A8 /* Console.m */,
 				046B1DD51D93711F0078755E /* Setting.h */,
@@ -641,6 +644,7 @@
 				046B1DE91D9B9C770078755E /* ImagePreview.m in Sources */,
 				046B1F201D9CBEFF0078755E /* AFURLSessionManager.m in Sources */,
 				046B1F5F1D9CBF040078755E /* QNGetAddrInfo.m in Sources */,
+				9A6C1D7D1DA0ECB6008BF09F /* Console+rightView.m in Sources */,
 				046B1F1E1D9CBEFF0078755E /* AFURLRequestSerialization.m in Sources */,
 				040F1F4D1D8F908200545F67 /* Notifications.m in Sources */,
 				046B1F601D9CBF040078755E /* QNHex.m in Sources */,
@@ -757,7 +761,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -797,7 +801,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -879,7 +883,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

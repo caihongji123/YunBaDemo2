@@ -7,8 +7,6 @@
 //
 
 #import "Console.h"
-#import "LeftView.h"
-#import "Notifications.h"
 
 #define TABLEVIEW_HEIGHT 40
 #define TABLEVIEW_HEADER_HEIGHT 40
@@ -57,7 +55,7 @@
     NSString *topic = [sender.titleLabel.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     [[GlobalAttribute sharedInstance] changeMsgArray:topic type:MsgObjType2Topic];
     [self.mainViewTableView reloadData];
-    [self.leftView hideLeftView:^{ [self deHighlight:sender]; }];
+    [self.leftView_t hideLeftView:^{ [self deHighlight:sender]; }];
     [self scrollToBottom:self.mainViewTableView];
     self.naviBarTitle.title = topic;
 }
@@ -123,7 +121,7 @@
 -(UIView *)leftView_tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     NSString *topic = [[GlobalAttribute sharedInstance].topicAndAliases allKeys][section];
     UIView *topicView = [[UIView alloc] init];
-    topicView.backgroundColor = self.leftView.backgroundColor;
+    topicView.backgroundColor = self.leftView_t.backgroundColor;
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     button.titleLabel.font = [UIFont fontWithName:TOPIC_FONT size:17];
     [button setTitle:[NSString stringWithFormat:@"   %@",topic] forState:UIControlStateNormal];
@@ -132,7 +130,7 @@
     [button addTarget:self action:@selector(topicTap:forEvent:) forControlEvents:UIControlEventTouchUpInside];
     [button addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(topicLongpressed:)]];
     button.backgroundColor = [UIColor clearColor];
-    button.frame = CGRectMake(10, 0, self.leftView.frame.size.width - 20, TABLEVIEW_HEADER_HEIGHT - 1);
+    button.frame = CGRectMake(10, 0, self.leftView_t.frame.size.width - 20, TABLEVIEW_HEADER_HEIGHT - 1);
     button.layer.cornerRadius = 8.0f;
     [button addTarget:self action:@selector(highlight:) forControlEvents:UIControlEventTouchDown];
     [button addTarget:self action:@selector(deHighlight:) forControlEvents:UIControlEventTouchDragOutside];
@@ -173,7 +171,7 @@
     NSString *alias = ((NSArray *)[[GlobalAttribute sharedInstance].topicAndAliases objectForKey:topic])[indexPath.row];
     [[GlobalAttribute sharedInstance] changeMsgArray:alias type:MsgObjType2Alias];
     [self.mainViewTableView reloadData];
-    [self.leftView hideLeftView:^{
+    [self.leftView_t hideLeftView:^{
         [self scrollToBottom:self.mainViewTableView];
     }];
     self.naviBarTitle.title = alias;

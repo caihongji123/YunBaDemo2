@@ -9,9 +9,8 @@
 #import "Notifications.h"
 #import "GlobalAttribute.h"
 
-
 @interface Notifications ()
-+(void)animateWithView:(UIView *)view;
++(void)animateWithView:(UIView *)view complete:(void(^)(void))complete;
 +(void)deleteViewWithAnimate:(UIView *)view up:(BOOL)up;
 @end
 
@@ -80,16 +79,51 @@
     ([Notifications deleteViewWithAnimate:self up:NO]);
 }
 @end
-
+static NotiView * showingView;
+static NSMutableArray <NotiView *> * notiQueue;
+static dispatch_semaphore_t semaphore;
 @implementation Notifications
 +(void)sendNotification:(NSString *)content {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        semaphore = dispatch_semaphore_create(1);
+        notiQueue = [NSMutableArray new];
+        dispatch_queue_t queue = dispatch_queue_create("com.yunba.ios.notificationQueue", DISPATCH_QUEUE_SERIAL);
+        dispatch_async(queue, ^{
+            for (;;) {
+                sleep(1);
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                if (notiQueue.count == 0) { dispatch_semaphore_signal(semaphore); continue; }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NotiView *notiView;
+                    if (notiQueue.count >= 5) {
+                        notiView = [[NotiView alloc] initWithText:[NSString stringWithFormat:@"%lu new notifications",notiQueue.count]];
+                        [notiQueue removeAllObjects];
+                    }else {
+                        notiView = [notiQueue lastObject];
+                        [notiQueue removeObject:notiView];
+                    }
+                    UIWindow *window = [[UIApplication sharedApplication].delegate window];
+                    [window addSubview:notiView];
+                    [window bringSubviewToFront:notiView];
+                    [Notifications animateWithView:notiView complete:^{
+                        if (showingView) {showingView.isTouch = YES; [showingView removeFromSuperview];}
+                        showingView = notiView;
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                });
+            }
+        });
+    });
     NotiView *notiView = [[NotiView alloc] initWithText:content];
-    UIWindow *window = [[UIApplication sharedApplication].delegate window];
-    [window addSubview:notiView];
-    [window bringSubviewToFront:notiView];
-    [Notifications animateWithView:notiView];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        [notiQueue addObject:notiView];
+        dispatch_semaphore_signal(semaphore);
+    });
+    
 }
-+(void)animateWithView:(NotiView *)view {
++(void)animateWithView:(NotiView *)view complete:(void(^)(void))complete {
     [UIView animateWithDuration:0.8f
                           delay:0
          usingSpringWithDamping:0.5
@@ -101,12 +135,15 @@
                          view.frame = frame;
                          
     } completion:^(BOOL finished) {
+        if (complete) { complete(); }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if (!view.isTouch) { [Notifications deleteViewWithAnimate:view up:YES]; }
+            if (!view.isTouch) {
+                [Notifications deleteViewWithAnimate:view up:YES];
+            }
         });
     }];
 }
-+(void)deleteViewWithAnimate:(NotiView *)view up:(BOOL)up{
++(void)deleteViewWithAnimate:(NotiView *)view up:(BOOL)up {
     if (!view.isRemove) {
         view.isRemove = 1;
         [UIView animateWithDuration:0.5f animations:^{
@@ -119,8 +156,13 @@
         }];
     }
 }
-+(CGSize)sizeFromCurrentWidth:(CGFloat)width text:(NSString *)text font:(UIFont *)font{
++(CGSize)sizeFromCurrentWidth:(CGFloat)width text:(NSString *)text font:(UIFont *)font {
     CGSize size = CGSizeMake(width, 0);
+    CGSize lableSize = [text boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin |NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:font} context:nil].size;
+    return lableSize;
+}
++(CGSize)sizeFromCurrentHeight:(CGFloat)height text:(NSString *)text font:(UIFont *)font {
+    CGSize size = CGSizeMake(0, height);
     CGSize lableSize = [text boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesLineFragmentOrigin |NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:font} context:nil].size;
     return lableSize;
 }

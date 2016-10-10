@@ -38,3 +38,12 @@ typedef NS_ENUM(NSUInteger, MsgObjType) {
 @property (nonatomic,strong)    NSString        * QNKey;
 -(instancetype)initWithTopic:(NSString *)topic payload:(NSData *)payload;
 @end
+
+@interface MsgNotification : NSObject <NSCoding>
+@property (nonatomic,copy) NSString     * title;
+@property (nonatomic,copy) NSString     * message;
+@property (nonatomic,copy) NSDate       * date;
+@property (nonatomic,copy) NSString     * uuid;
+-(instancetype)initWithMsgObj:(MsgObj *)obj;
+-(NSString *)timeInterval;
+@end

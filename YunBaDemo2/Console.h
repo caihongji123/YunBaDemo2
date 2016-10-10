@@ -9,18 +9,23 @@
 #import <UIKit/UIKit.h>
 #import "ActionController.h"
 #import "YunBaService.h"
+#import "Notifications.h"
+#import "LeftView.h"
 #import "GlobalAttribute.h"
 @class LeftView;
 @interface Console : UIViewController <UITableViewDelegate,UITableViewDataSource,ActionControllerDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView             * mainView;
-@property (weak, nonatomic) IBOutlet UITableView *mainViewTableView;
-@property (weak, nonatomic) IBOutlet LeftView           * leftView;
+@property (weak, nonatomic) IBOutlet UITableView        * mainViewTableView;
+@property (weak, nonatomic) IBOutlet LeftView           * leftView_t;
 @property (weak, nonatomic) IBOutlet UITableView        * lefViewTableView;
+@property (weak, nonatomic) IBOutlet LeftView           * rightView_t;
+@property (weak, nonatomic) IBOutlet UITableView        * rightTableView;
 @property (weak, nonatomic) IBOutlet UIView             * bottomView;
 @property (nonatomic,copy)           NSString           * selectedTopic;
 @property (weak, nonatomic) IBOutlet UINavigationItem   * naviBarTitle;
 @property (weak, nonatomic) IBOutlet UIButton           * sendButton;
 @property (weak, nonatomic) IBOutlet UITextField        * sendField;
+@property (weak, nonatomic) IBOutlet UIButton           * clearAllButton; // right view clear all button
 -(NSLayoutConstraint *)constraintWithView:(UIView *)view identifier:(NSString *)identifier;
 -(BOOL)isNotEmpty:(NSString *)text;
 - (void)scrollToBottom:(UITableView *)tableView;
@@ -44,6 +49,21 @@
 -(void)subscribePresence;
 -(void)unsubscribePresence;
 @end
+
+@interface Console (rightView)
+
+/******************** tableView ********************/
+-(NSInteger)rightView_numberOfSectionsInTableView:(UITableView *)tableView;
+-(NSInteger)rightView_tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
+-(UITableViewCell *)rightView_tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+-(CGFloat)rightView_tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section;
+-(UIView *)rightView_tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section;
+-(CGFloat)rightView_tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath;
+-(void)rightView_tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+/**************************************************/
+@end
+
+
 @interface Console (mainView)
 /******************** tableView ********************/
 -(NSInteger)mainView_numberOfSectionsInTableView:(UITableView *)tableView;

@@ -89,3 +89,61 @@
     return self;
 }
 @end
+
+/************************* MsgNotification ***********************/
+#define MSG_NOTI_TITLE @"title"
+#define MSG_NOTI_MSG   @"message"
+#define MSG_NOTI_DATE  @"date"
+#define MSG_NOTI_UUID  @"uuid"
+@implementation MsgNotification
+-(instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super init]) {
+        if (aDecoder == nil) { return nil;}
+        _title = [aDecoder decodeObjectForKey:MSG_NOTI_TITLE];
+        _message = [aDecoder decodeObjectForKey:MSG_NOTI_MSG];
+        _date = [aDecoder decodeObjectForKey:MSG_NOTI_DATE];
+        _uuid = [aDecoder decodeObjectForKey:MSG_NOTI_UUID];
+    }
+    return self;
+}
+-(void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:_title forKey:MSG_NOTI_TITLE];
+    [aCoder encodeObject:_message forKey:MSG_NOTI_MSG];
+    [aCoder encodeObject:_date forKey:MSG_NOTI_DATE];
+    [aCoder encodeObject:_uuid forKey:MSG_NOTI_UUID];
+}
+-(instancetype)initWithMsgObj:(MsgObj *)obj {
+    if (self = [super init]) {
+        if (!obj.alias || !obj.topic || !obj.text) { return nil; }
+        NSString *prefix;
+        switch (obj.type2) {
+            case MsgObjType2Topic: _title = obj.topic;
+                                   prefix = [NSString stringWithFormat:@"%@: ",obj.alias];
+                                   break;
+            case MsgObjType2Alias: _title = obj.alias; break;
+            default:break;
+        }
+        if ([obj isKindOfClass:[MsgImage class]]) {
+            _message = @"给你发送了一张图片";
+        }else { _message = obj.text; }
+        if (prefix) { _message = [NSString stringWithFormat:@"%@ %@",prefix,_message]; }
+        _date = [NSDate date];
+        _uuid = [[NSUUID UUID] UUIDString];
+    }
+    return self;
+}
+-(NSString *)timeInterval {
+    NSInteger second = labs([NSString stringWithFormat:@"%.1f",[_date timeIntervalSinceNow]].integerValue);
+    if (second < 60) {
+        return [NSString stringWithFormat:@"%ld sec ago",second];
+    }else if (second >= 60 && second < 60*60) {
+        return [NSString stringWithFormat:@"%ld min ago",second/60];
+    }else if (second >= 60*60 && second < 60*60*24) {
+        return [NSString stringWithFormat:@"%ld hour ag",second/(60*60)];
+    }else if (second >= 60*60*24 && second < 60*60*24*30) {
+        return [NSString stringWithFormat:@"%ld day ago",second / (60*60*24)];
+    }else if (second >= 60*60*24*30) {
+        return [NSString stringWithFormat:@"1 mon ago"];
+    }else { return nil;}
+}
+@end

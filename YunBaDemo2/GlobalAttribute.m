@@ -26,6 +26,7 @@ static GlobalAttribute *globalAttr;
             _msgArray = [NSMutableArray new];
             [_msgArray addObject:@"none"];
             [_msgArray addObject:@[]];
+            [self updateMsgNotifications];
         }
         globalAttr = self;
     }
@@ -138,6 +139,54 @@ static GlobalAttribute *globalAttr;
     if (array) {
         [manager removeItemAtPath:oldFilePath error:nil];
         [NSKeyedArchiver archiveRootObject:array toFile:filePath];
+    }
+}
+
+-(void)addMsgNotifications:(MsgNotification *)msgNoti {
+    if (!msgNoti) {return;}
+    NSString *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [path stringByAppendingPathComponent:@"msgNotifications"];
+    NSMutableArray *array = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    if (!array) { array = [NSMutableArray new];}
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:msgNoti];
+    if (!data) {return;}
+    [array addObject:data];
+    [NSKeyedArchiver archiveRootObject:array toFile:filePath];
+}
+-(void)deleteAllMsgNotifications {
+    NSString *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [path stringByAppendingPathComponent:@"msgNotifications"];
+    NSMutableArray *array = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    if (!array) {return;}
+    [array removeAllObjects];
+    [NSKeyedArchiver archiveRootObject:array toFile:filePath];
+}
+-(NSInteger)deleteMsgNotifications:(NSString *)uuid {
+    if (!uuid) {return -1;}
+    NSString *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [path stringByAppendingPathComponent:@"msgNotifications"];
+    NSMutableArray *array = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    if (!array) {return -1;}
+    NSData *aim; NSInteger index = -1;
+    for (NSData *data in array) {
+        MsgNotification *noti = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        if ([noti.uuid isEqualToString:uuid])
+            { aim = data; index = [[[array reverseObjectEnumerator]allObjects] indexOfObject:data];  break; }
+    }
+    [array removeObject:aim];
+    [NSKeyedArchiver archiveRootObject:array toFile:filePath];
+    return index;
+    
+}
+-(void)updateMsgNotifications {
+    self.msgNotifications = [NSMutableArray new];
+    NSString *path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *filePath = [path stringByAppendingPathComponent:@"msgNotifications"];
+    NSMutableArray *array = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    if (!array) {return;};
+    for (NSData *data in [[array reverseObjectEnumerator] allObjects]) {
+        MsgNotification *noti = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        [self.msgNotifications addObject:noti];
     }
 }
 @end

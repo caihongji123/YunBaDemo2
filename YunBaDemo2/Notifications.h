@@ -11,4 +11,5 @@
 @interface Notifications : NSObject
 +(void)sendNotification:(NSString *)content;
 +(CGSize)sizeFromCurrentWidth:(CGFloat)width text:(NSString *)text font:(UIFont *)font;
++(CGSize)sizeFromCurrentHeight:(CGFloat)height text:(NSString *)text font:(UIFont *)font;
 @end

@@ -9,6 +9,11 @@
 #import "TextView.h"
 #import "GlobalAttribute.h"
 
+@interface TextView ()
+@property (nonatomic,strong) UILabel * titleLabel;
+@property (nonatomic,strong) UILabel * textLabel;
+@end
+
 @implementation TextView
 -(void)drawRect:(CGRect)rect {
     // change the view drawing

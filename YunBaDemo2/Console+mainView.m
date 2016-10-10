@@ -8,7 +8,6 @@
 
 #import "Console.h"
 #import "TextView.h"
-#import "Notifications.h"
 #import "QNGlobal.h"
 #import "ImageViewController.h"
 
@@ -40,8 +39,7 @@
             NSArray *remindAlias = [self remindParse:self.sendField.text]; // 解析需要 @ 的人
             [dict setObject:@"Topic" forKey:@"Type"];
             NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
-            YBApnOption *apnOpt = [YBApnOption optionWithAlert:nil badge:@(1) sound:@"default"];
-            YBPublish2Option *option = [YBPublish2Option optionWithApnOption:apnOpt];
+            YBPublish2Option *option = [YBPublish2Option optionWithApnOption:nil];
             [YunBaService publish2:aim data:data option:option resultBlock:^(BOOL succ, NSError *error) {
                 if (succ) {
                     NSLog(@"Success! Publish to topic : <%@> data: <%@>",aim,data);
@@ -111,7 +109,6 @@
                     [QNGlobal getImageWitKey:msgImage.QNKey complete:^(BOOL success, UIImage *image) {
                         if (!success) { return; }
                         msgImage.imageData = UIImageJPEGRepresentation(image, 1.0);
-                        NSLog(@"%luKB",msgImage.imageData.length / 1000);
                         [[GlobalAttribute sharedInstance] addObj:msgImage isRecv:NO];
                         [self.mainViewTableView reloadData];
                         [self scrollToBottom:self.mainViewTableView];
@@ -235,27 +232,24 @@
     if ([obj isKindOfClass:[MsgImage class]]) {MsgType = MsgObjTypeImage;}
     else if([obj isKindOfClass:[MsgObj class]]) {MsgType = MsgObjTypeMsg;}
     else {return 0;}
-    UITableViewCell *cell;
     switch (MsgType) {
         case MsgObjTypeMsg: {
             MsgObj *msg = obj;
-            NSString *gapId;
-            cell = [tableView dequeueReusableCellWithIdentifier:@"Msg"];
-            UIView *view = [cell viewWithTag:40];
-            NSInteger btWidth = [self constraintWithView:view identifier:@"Width"].constant;
-            NSInteger gap = [self constraintWithView:cell.contentView identifier:gapId].constant;
-            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWidth - gap - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
+            static UITableViewCell *msgCell;
+            if (!msgCell) { msgCell = [tableView dequeueReusableCellWithIdentifier:@"Msg"];}
+            UIView *view = [msgCell viewWithTag:40];
+            CGFloat btWidth = [self constraintWithView:view identifier:@"Width"].constant;
+            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWidth - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
             CGFloat textHeight = [TextView heightWithTitle:msg.alias text:msg.text width:textWidth];
             return textHeight + TEXT_VIEW_TOP + TEXT_VIEW_BOTTOM;
         }break;
         case MsgObjTypeImage: {
             MsgImage *image = obj;
-            NSString *gapId;
-            cell = [tableView dequeueReusableCellWithIdentifier:@"Image"];
-            UIView *view = [cell viewWithTag:40];
-            NSInteger btWidth = [self constraintWithView:view identifier:@"Width"].constant;
-            NSInteger gap = [self constraintWithView:cell.contentView identifier:gapId].constant;
-            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWidth - gap - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
+            static UITableViewCell *imageCell;
+            if (!imageCell) { imageCell = [tableView dequeueReusableCellWithIdentifier:@"Image"]; }
+            UIView *view = [imageCell viewWithTag:40];
+            CGFloat btWidth = [self constraintWithView:view identifier:@"Width"].constant;
+            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWidth - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
             CGFloat textHeight = [TextImageView heightWithTilte:image.alias image:[UIImage imageWithData:image.imageData] width:textWidth];
             return textHeight + TEXT_VIEW_TOP + TEXT_VIEW_BOTTOM;
         }break;
@@ -272,17 +266,15 @@
     switch (MsgType) {
         case MsgObjTypeMsg: {
             MsgObj *msg = obj;
-            NSString *gapId;
             cell = [tableView dequeueReusableCellWithIdentifier:@"Msg"];
             UIView *view = [cell viewWithTag:40];
             view.layer.cornerRadius = 6.0f;
             view.layer.masksToBounds = YES;
-            NSInteger btWidth = [self constraintWithView:view identifier:@"Width"].constant;
-            NSInteger gap = [self constraintWithView:cell.contentView identifier:gapId].constant;
-            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWidth - gap - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
+            CGFloat btWith = [self constraintWithView:view identifier:@"Width"].constant;
+            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWith - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
             TextView *textView = [[TextView alloc] initWithTitle:msg.alias text:msg.text width:textWidth];
             textView.tag = 41;
-            textView.frame = CGRectMake(TEXT_VIEW_LEADING + btWidth + gap,TEXT_VIEW_TOP, textView.frame.size.width, textView.frame.size.height);
+            textView.frame = CGRectMake(TEXT_VIEW_LEADING + btWith, TEXT_VIEW_TOP, textView.frame.size.width, textView.frame.size.height);
             UIView *oldTextView = [cell.contentView viewWithTag:41];
             [oldTextView removeFromSuperview];
             [cell.contentView addSubview:textView];
@@ -290,18 +282,16 @@
         case MsgObjTypeImage: {
             MsgImage *image = obj;
             UIImage *img = [UIImage imageWithData:image.imageData];
-            NSString *gapId;
             cell = [tableView dequeueReusableCellWithIdentifier:@"Image"];
             UIView *view = [cell viewWithTag:40];
             view.layer.cornerRadius = 6.0f;
             view.layer.masksToBounds = YES;
-            NSInteger btWidth = [self constraintWithView:view identifier:@"Width"].constant;
-            NSInteger gap = [self constraintWithView:cell.contentView identifier:gapId].constant;
-            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWidth - gap - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
+            CGFloat btWith = [self constraintWithView:view identifier:@"Width"].constant;
+            CGFloat textWidth = [UIScreen mainScreen].bounds.size.width - btWith - TEXT_VIEW_TRIALING - TEXT_VIEW_LEADING;
             TextImageView *imageView = [[TextImageView alloc] initWithTitle:image.alias image:img width:textWidth target:self action:@selector(imageViewTap:)];
             
             imageView.tag = 41;
-            imageView.frame = CGRectMake(TEXT_VIEW_LEADING + btWidth, TEXT_VIEW_TOP, imageView.frame.size.width, imageView.frame.size.height);
+            imageView.frame = CGRectMake(TEXT_VIEW_LEADING + btWith, TEXT_VIEW_TOP, imageView.frame.size.width, imageView.frame.size.height);
             UIView *oldImageView = [cell.contentView viewWithTag:41];
             [oldImageView removeFromSuperview];
             [cell.contentView addSubview:imageView];
